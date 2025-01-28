@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
 interface SkateSizes {
   [key: string]: {
@@ -62,34 +63,41 @@ function SchedulingApp() {
   };
 
   return (
-    <div className="flex flex-col items-center p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Skate Size Scheduling</h1>
-      <div className="grid grid-cols-3 gap-4">
-        {Object.keys(skateSizes).map((size) => (
-          <Button key={size} onClick={() => handleSizeSelection(size)} disabled={Object.values(skateSizes[size].times).every(count => count === 0)}>
-            {size} ({Object.values(skateSizes[size].times).reduce((a, b) => a + b, 0)} left)
-          </Button>
-        ))}
+    <div className="flex flex-col items-center p-8 bg-gray-100 min-h-screen">
+      <div className="w-full max-w-5xl bg-white shadow-lg rounded-xl p-8 flex flex-col gap-6">
+        <h1 className="text-3xl font-bold text-gray-900">Skate Size Scheduling</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {Object.keys(skateSizes).map((size) => (
+            <Card key={size} className="p-4 shadow-md bg-gray-50 rounded-lg flex flex-col gap-3">
+              <Button
+                className="w-full text-left py-3 text-lg font-medium bg-white text-gray-800 border border-gray-400 rounded-md focus:outline-none"
+                onClick={() => handleSizeSelection(size)}
+                disabled={Object.values(skateSizes[size].times).every(count => count === 0)}
+              >
+                {size} ({Object.values(skateSizes[size].times).reduce((a, b) => a + b, 0)} left)
+              </Button>
+              {selectedSize === size && (
+                <Select onValueChange={(value) => handleTimeSelection(value)}>
+                  <SelectTrigger className="w-full py-3 px-4 border border-gray-300 rounded-md bg-white text-gray-800 shadow-sm">
+                    <SelectValue placeholder="Select a time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableTimes.map((time) => (
+                      <SelectItem
+                        key={time}
+                        value={time}
+                        onValueChange={(value) => handleTimeSelection(value)}
+                      >
+                        {time} ({skateSizes[size].times[time]} left)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </Card>
+          ))}
+        </div>
       </div>
-
-      {selectedSize && (
-        <Card className="w-full max-w-md mt-4">
-          <CardContent>
-            <h2 className="text-xl font-semibold">Available Times for {selectedSize}</h2>
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              {availableTimes.map((time) => (
-                <Button
-                  key={time}
-                  onClick={() => handleTimeSelection(time)}
-                  disabled={skateSizes[selectedSize].times[time] === 0}
-                >
-                  {time} ({skateSizes[selectedSize].times[time]} left)
-                </Button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }
