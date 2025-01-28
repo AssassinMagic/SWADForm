@@ -1,17 +1,19 @@
-import { ReactNode, MouseEventHandler } from 'react';
+import React from 'react';
 
-interface ButtonProps {
-  children: ReactNode;
-  onClick: MouseEventHandler<HTMLButtonElement>;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
 }
 
-export function Button({ children, onClick }: ButtonProps) {
-    return (
-      <button
-        onClick={onClick}
-        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-      >
-        {children}
-      </button>
-    );
-  }
+export function Button({ children, disabled, ...props }: ButtonProps) {
+  return (
+    <button
+      {...props}
+      disabled={disabled}
+      className={`px-4 py-2 rounded-lg transition-colors ${
+        disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
