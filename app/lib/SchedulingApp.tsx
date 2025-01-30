@@ -12,22 +12,8 @@ interface SkateSizes {
 }
 
 const fetchSkateSizes = async (): Promise<SkateSizes> => {
-  const response = await fetch("/skate_sizes.csv");
-  const text = await response.text();
-  const lines = text.split("\n");
-  const sizes: SkateSizes = {};
-
-  lines.forEach((line) => {
-    const [size, count] = line.split(",");
-    sizes[size] = {
-      times: {
-        "12:00 - 1:00 PM": parseInt(count, 10),
-        "1:00 - 2:00 PM": parseInt(count, 10),
-        "2:00 - 3:00 PM": parseInt(count, 10),
-      },
-    };
-  });
-  return sizes;
+  const response = await fetch("/api/getSkateInventory");
+  return response.json();
 };
 
 function SchedulingApp() {
@@ -52,37 +38,20 @@ function SchedulingApp() {
       return;
     }
 
-    if (isSubmitting) return;
     setIsSubmitting(true);
 
     try {
-      // Send email (Nodemailer)
-      await fetch("/api/sendEmail", {
+      const response = await fetch("/api/makeReservation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_email: email, name, student_id: studentId, skate_time: selectedTime, skate_size: selectedSize, song_recommendation: songRecommendation }),
       });
 
-      // Save reservation in Neon database
-      await fetch("/api/saveReservation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_email: email, name, student_id: studentId, skate_time: selectedTime, skate_size: selectedSize, song_recommendation: songRecommendation }),
-      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
 
-      alert(`Reservation confirmed! Time: ${selectedTime}, Size: ${selectedSize}`);
-
-      // Update state and reset fields
-      setSkateSizes((prev) => {
-        const updatedSizes = { ...prev };
-        if (updatedSizes[selectedSize!] && updatedSizes[selectedSize!].times[selectedTime!]) {
-          updatedSizes[selectedSize!].times[selectedTime!] -= 1;
-          if (updatedSizes[selectedSize!].times[selectedTime!] === 0) {
-            delete updatedSizes[selectedSize!].times[selectedTime!];
-          }
-        }
-        return updatedSizes;
-      });
+      alert("Reservation successful!");
+      setSkateSizes(await fetchSkateSizes());
 
       setSelectedTime(null);
       setSelectedSize(null);
@@ -93,18 +62,17 @@ function SchedulingApp() {
 
       window.location.href = "/confirmation";
     } catch (error) {
-      console.error("Error processing reservation:", error);
-      alert("Something went wrong. Please try again.");
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("An unknown error occurred.");
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const availableTimes = Array.from(
-    new Set(
-      Object.values(skateSizes).flatMap((size) => Object.keys(size.times))
-    )
-  );
+  const availableTimes = Array.from(new Set(Object.values(skateSizes).flatMap((size) => Object.keys(size.times))));
 
   return (
     <div className="app-container">
@@ -115,36 +83,27 @@ function SchedulingApp() {
           <input type="text" placeholder="Enter your student ID" value={studentId} onChange={(e) => setStudentId(e.target.value)} required />
           <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           <input type="text" placeholder="Song recommendation (optional)" value={songRecommendation} onChange={(e) => setSongRecommendation(e.target.value)} />
+          
           <div className="time-grid">
             {availableTimes.map((time) => (
               <div key={time} className="time-card">
                 <h2 className="time-heading">{time}</h2>
                 <div className="size-grid">
-                  {Object.keys(skateSizes).map((size) => {
-                    const count = skateSizes[size]?.times[time] || 0;
-                    return (
-                      count > 0 && (
-                        <button
-                          type="button"
-                          key={size}
-                          className={`btn ${selectedTime === time && selectedSize === size ? "btn-selected" : ""}`}
-                          onClick={() => {
-                            setSelectedTime(time);
-                            setSelectedSize(size);
-                          }}
-                        >
-                          {size} ({count} left)
-                        </button>
-                      )
-                    );
-                  })}
+                  {Object.keys(skateSizes).map((size) => (
+                    <button
+                      key={size}
+                      disabled={!skateSizes[size].times[time]}
+                      className={`btn ${selectedTime === time && selectedSize === size ? "btn-selected" : ""}`}
+                      onClick={() => { setSelectedTime(time); setSelectedSize(size); }}
+                    >
+                      {size} ({skateSizes[size].times[time] || 0} left)
+                    </button>
+                  ))}
                 </div>
               </div>
             ))}
           </div>
-          <button type="submit" className="submit-btn" disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Confirm Reservation"}
-          </button>
+          <button type="submit" disabled={isSubmitting}>Confirm Reservation</button>
         </form>
       </div>
     </div>
