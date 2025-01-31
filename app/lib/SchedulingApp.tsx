@@ -38,21 +38,31 @@ function SchedulingApp() {
       return;
     }
 
+    if (isSubmitting) return; // Prevent double submission
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/makeReservation", {
+      // Step 1: Make the reservation (this should decrement the count)
+      const reservationResponse = await fetch("/api/makeReservation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_email: email, name, student_id: studentId, skate_time: selectedTime, skate_size: selectedSize, song_recommendation: songRecommendation }),
       });
 
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error);
+      const reservationResult = await reservationResponse.json();
+      if (!reservationResponse.ok) throw new Error(reservationResult.error);
 
-      alert("Reservation successful!");
+      // Step 2: Only send email AFTER confirming reservation
+      await fetch("/api/sendEmail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_email: email, name, student_id: studentId, skate_time: selectedTime, skate_size: selectedSize, song_recommendation: songRecommendation }),
+      });
+
+      // Step 3: Fetch updated inventory
       setSkateSizes(await fetchSkateSizes());
 
+      alert("Reservation successful!");
       setSelectedTime(null);
       setSelectedSize(null);
       setEmail("");
@@ -83,7 +93,7 @@ function SchedulingApp() {
           <input type="text" placeholder="Enter your student ID" value={studentId} onChange={(e) => setStudentId(e.target.value)} required />
           <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           <input type="text" placeholder="Song recommendation (optional)" value={songRecommendation} onChange={(e) => setSongRecommendation(e.target.value)} />
-          
+
           <div className="time-grid">
             {availableTimes.map((time) => (
               <div key={time} className="time-card">
@@ -91,6 +101,7 @@ function SchedulingApp() {
                 <div className="size-grid">
                   {Object.keys(skateSizes).map((size) => (
                     <button
+                      type="button" // ✅ Prevents accidental form submission
                       key={size}
                       disabled={!skateSizes[size].times[time]}
                       className={`btn ${selectedTime === time && selectedSize === size ? "btn-selected" : ""}`}
