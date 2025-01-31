@@ -198,4 +198,37 @@ body {
     color: #fff;
     border: 1px solid #0056b3;
   }
+  button[type="submit"] {
+    font-size: 18px; /* Increase text size */
+    padding: 12px 24px; /* Adjust padding for larger button */
+    width: 100%; /* Make button span the full width */
+    background-color: #4CAF50; /* Change background color */
+    color: white; /* Set text color */
+    border: none;
+    border-radius: 5px; /* Add rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
   
+  /* Add hover effect for better user interaction */
+  button[type="submit"]:hover {
+    background-color: #45a049; /* Darken background color on hover */
+  }
+
+  input[type="text"],
+input[type="email"] {
+  font-size: 16px; /* Increase the font size */
+  padding: 12px 16px; /* Adjust padding for larger text box */
+  width: 100%; /* Make input fields span the full width */
+  margin: 8px 0; /* Add some margin between the fields */
+  border: 1px solid #ccc; /* Set border color */
+  border-radius: 5px; /* Add rounded corners */
+  box-sizing: border-box; /* Ensure padding doesn't affect width */
+}
+
+/* Optional: Add focus effect for better user interaction */
+input[type="text"]:focus,
+input[type="email"]:focus {
+  border-color: #4CAF50; /* Change border color on focus */
+  outline: none; /* Remove default outline */
+}
