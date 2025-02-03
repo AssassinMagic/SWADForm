@@ -30,9 +30,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           <p><strong>Skate Size:</strong> ${skate_size}</p>
           <p><strong>Song Recommendation:</strong> ${song_recommendation}</p>
           <p>The event will be held at <strong>Ridder Arena</strong> from <strong>12PM to 3PM</strong>. Please arrive on time and be ready to leave the ice 5 minutes before your hour ends.</p>
-          <p>If you need to cancel or reschedule, please email <a href="mailto:vyas0028@umn.edu">vyas0028@umn.edu</a>.</p>
+          <p>If you need to cancel or reschedule, please email <a href="mailto:jay00015@umn.edu">jay00015@umn.edu</a>.</p>
           <p>Snacks, drinks, photos, and activities will be provided!</p>
           <h3>See you there! 🎉</h3>
+          <p><em>This is an automated email.</em></p>
         `,
       };
 
