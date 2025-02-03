@@ -102,7 +102,7 @@ function SchedulingApp() {
                 <div className="size-grid">
                   {Object.keys(skateSizes).map((size) => (
                     <button
-                      type="button" // ✅ Prevents accidental form submission
+                      type="button" 
                       key={size}
                       disabled={!skateSizes[size].times[time]}
                       className={`btn ${selectedTime === time && selectedSize === size ? "btn-selected" : ""}`}
@@ -118,6 +118,13 @@ function SchedulingApp() {
           <button type="submit" disabled={isSubmitting}>Confirm Reservation</button>
         </form>
       </div>
+      <footer className="footer">
+        <img src="/logo.png" alt="Company Logo" className="logo" />
+        <div className="footer-links">
+          <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
+        </div>
+      </footer>
     </div>
   );
 }
