@@ -122,12 +122,20 @@ function SchedulingApp() {
         <div className="footer-content">
           <img src="/logo.png" alt="Company Logo" className="logo" />
           <span>© 2025 YourCompany, Inc.</span>
-          {['Terms', 'Privacy', 'Security', 'Status', 'Docs', 'Contact', 'Manage cookies', 'Do not share my personal information'].map((text, index) => (
-            <a key={index} href={`/${text.toLowerCase().replace(/ /g, '-')}`} className="footer-link">{text}</a>
-          ))}
+          <div className="footer-links">
+            {['Terms', 'Privacy', 'Security', 'Status', 'Docs', 'Contact', 'Manage cookies', 'Do not share my personal information'].map((text, index) => (
+              <a key={index} href={`/${text.toLowerCase().replace(/ /g, '-')}`} className="footer-link">{text}</a>
+            ))}
+          </div>
         </div>
       </footer>
       <style jsx>{`
+        .footer-links {
+          display: flex;
+          gap: 15px;
+          flex-wrap: wrap;
+          margin-top: 10px;
+        }
         .footer-link {
           text-decoration: none;
           color: inherit;
