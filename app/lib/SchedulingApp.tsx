@@ -121,7 +121,7 @@ function SchedulingApp() {
       <footer className="footer">
         <div className="footer-content">
           <img src="/logo.png" alt="Science & Engineering Student Board Logo" className="logo" />
-          <span>© 2025 Science & Engineering Student Board</span>
+          <span className="footer-text">© 2025 Science & Engineering Student Board</span>
           <div className="footer-links">
             {['Terms', 'Privacy', 'Security', 'Status', 'Docs', 'Contact', 'Manage cookies', 'Do not share my personal information'].map((text, index) => (
               <a key={index} href={`/${text.toLowerCase().replace(/ /g, '-')}`} className="footer-link">{text}</a>
@@ -139,6 +139,9 @@ function SchedulingApp() {
         .logo {
           height: 40px;
           margin-right: 10px;
+        }
+        .footer-text {
+          margin-right: 20px;
         }
         .footer-links {
           display: flex;
