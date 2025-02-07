@@ -88,7 +88,7 @@ function SchedulingApp() {
     <div className="app-container">
       <div className="main-card">
         <h1>Skate Size Scheduling</h1>
-        <p className="description">Reserve your preferred skate size and time slot (L is for Women, M is for Men, Y is for Youth, Skates with letters are figure skates, Skates without letters are hockey skates). Please ensure you fill out all required details before confirming your reservation.</p>
+        <p className="description">Reserve your preferred skate size and time slot <strong>(L is for Women, M is for Men, Y is for Youth, Skates with letters are figure skates, Skates without letters are hockey skates)</strong>. Please ensure you fill out all required details before confirming your reservation.</p>
         <form onSubmit={handleFormSubmit} className="form">
           <input type="text" placeholder="Enter your name" value={name} onChange={(e) => setName(e.target.value)} required />
           <input type="text" placeholder="Enter your student ID (N/A if you don't have one)" value={studentId} onChange={(e) => setStudentId(e.target.value)} required />
