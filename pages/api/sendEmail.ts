@@ -5,7 +5,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     const { user_email, name, student_id, skate_size, skate_time, song_recommendation } = req.body;
 
-    if (!user_email || !name || !student_id || !skate_size || !skate_time || !song_recommendation) {
+    if (!user_email || !name || !student_id || !skate_size || !skate_time) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
