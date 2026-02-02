@@ -3,9 +3,23 @@ import nodemailer from 'nodemailer';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { user_email, name, student_id, skate_size, skate_time, song_recommendation } = req.body;
+    const { 
+      first_name, 
+      last_name, 
+      phone, 
+      email, 
+      address, 
+      height, 
+      weight, 
+      age, 
+      student_id,
+      skate_preference,
+      shoe_size,
+      skating_ability, 
+      skate_time 
+    } = req.body;
 
-    if (!user_email || !name || !student_id || !skate_size || !skate_time) {
+    if (!first_name || !last_name || !phone || !email || !address || !height || !weight || !age || !student_id || !skate_preference || !skating_ability || !skate_time) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -20,18 +34,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const mailOptions = {
         from: process.env.EMAIL_USER,
-        to: user_email,
-        subject: "Skate with a Date - Confirmation",
+        to: email,
+        subject: "Skate Reservation - Confirmation",
         html: `
-          <h2>You've been registered for Skate with a Date!</h2>
-          <p><strong>Name:</strong> ${name}</p>
+          <h2>You've been registered for Skate Session!</h2>
+          <p><strong>Name:</strong> ${first_name} ${last_name}</p>
+          <p><strong>Phone:</strong> ${phone}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Address:</strong> ${address}</p>
           <p><strong>Student ID:</strong> ${student_id}</p>
+          <p><strong>Height:</strong> ${height}</p>
+          <p><strong>Weight:</strong> ${weight}</p>
+          <p><strong>Age:</strong> ${age}</p>
+          <p><strong>Skating Ability:</strong> ${skating_ability}</p>
+          <p><strong>Skates:</strong> ${skate_preference} ${skate_preference === 'Use Provided Skates' ? `(Size: ${shoe_size})` : ''}</p>
           <p><strong>Time Slot:</strong> ${skate_time}</p>
-          <p><strong>Skate Size:</strong> ${skate_size}</p>
-          <p><strong>Song Recommendation:</strong> ${song_recommendation || ''}</p>
-          <p>The event will be held at <strong>Ridder Arena</strong> from <strong>12PM to 3PM</strong>. Please arrive on time and be ready to leave the ice 5 minutes before your hour ends.</p>
-          <p>If you need to cancel or reschedule, please email <a href="mailto:jay00015@umn.edu">jay00015@umn.edu</a>.</p>
-          <p>Snacks, drinks, photos, and activities will be provided!</p>
+          <p>The event will be held at <strong>Ridder Arena</strong>. Please arrive on time.</p>
+          <p>If you need to cancel or reschedule, please contact support.</p>
           <h3>See you there! 🎉</h3>
           <p><em>This is an automated email.</em></p>
         `,
