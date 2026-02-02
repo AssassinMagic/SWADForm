@@ -129,8 +129,8 @@ function SchedulingApp() {
   return (
     <div className="app-container">
       <div className="main-card">
-        <h1>Skate Scheduling</h1>
-        <p className="description">Please fill out the form below to reserve your slot.</p>
+        <h1>Skate with a Date RSVP</h1>
+        <p className="description">This is the skate reservation for for SWAD 2026. Please enter your information below. This will be used to prefill sections of your waiver, which will be signed in person at the event.</p>
         <form onSubmit={handleFormSubmit} className="form">
           <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
           <input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
