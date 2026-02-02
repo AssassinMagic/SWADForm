@@ -74,7 +74,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             subject: "Skate with a Date Reservation - Confirmation",
             html: `
               <h2>You've been registered for Skate with a Date!</h2>
-              <p>The event will be held at <strong>Ridder Arena on February 14th</strong>. Please arrive 10-15 minutes early.</p>
+              <p>The event will be held at <strong>Ridder Arena on February 14th</strong>. Arrive 10-15 minutes early to sign your waiver.</p>
               <p><strong>Name:</strong> ${first_name} ${last_name}</p>
               <p><strong>Phone:</strong> ${phone}</p>
               <p><strong>Email:</strong> ${email}</p>
