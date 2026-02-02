@@ -17,24 +17,35 @@ const fetchSkateSizes = async (): Promise<SkateSizes> => {
 };
 
 function SchedulingApp() {
-  const [skateSizes, setSkateSizes] = useState<SkateSizes>({});
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [name, setName] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const [height, setHeight] = useState<string>("");
+  const [weight, setWeight] = useState<string>("");
+  const [age, setAge] = useState<string>("");
   const [studentId, setStudentId] = useState<string>("");
-  const [songRecommendation, setSongRecommendation] = useState<string>("");
+  const [skatePreference, setSkatePreference] = useState<string>("");
+  const [shoeSize, setShoeSize] = useState<string>("");
+  const [skatingAbility, setSkatingAbility] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  useEffect(() => {
-    fetchSkateSizes().then(setSkateSizes);
-  }, []);
+  const timeSlots = ["5-6pm", "6-7pm", "7-8pm"];
+  const abilityLevels = ["Beginner", "Beginner/Intermediate", "Intermediate", "Intermediate/Expert", "Expert"];
+  const skatePreferences = ["Bring Own Skates", "Use Provided Skates"];
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedTime || !selectedSize || !email || !name || !studentId) {
+    if (!firstName || !lastName || !phone || !email || !address || !height || !weight || !age || !studentId || !skatingAbility || !selectedTime || !skatePreference) {
       alert("Please fill out all required fields.");
+      return;
+    }
+
+    if (skatePreference === "Use Provided Skates" && !shoeSize) {
+      alert("Please enter your shoe size.");
       return;
     }
 
@@ -42,33 +53,66 @@ function SchedulingApp() {
     setIsSubmitting(true);
 
     try {
-      // Step 1: Make the reservation (this should decrement the count)
+      // Step 1: Make the reservation
       const reservationResponse = await fetch("/api/makeReservation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_email: email, name, student_id: studentId, skate_time: selectedTime, skate_size: selectedSize, song_recommendation: songRecommendation }),
+        body: JSON.stringify({ 
+          first_name: firstName, 
+          last_name: lastName, 
+          phone, 
+          email, 
+          address, 
+          height, 
+          weight, 
+          age, 
+          student_id: studentId,
+          skate_preference: skatePreference,
+          shoe_size: skatePreference === "Use Provided Skates" ? shoeSize : null,
+          skating_ability: skatingAbility, 
+          skate_time: selectedTime 
+        }),
       });
 
       const reservationResult = await reservationResponse.json();
       if (!reservationResponse.ok) throw new Error(reservationResult.error);
 
-      // Step 2: Only send email AFTER confirming reservation
+      // Step 2: Send email
       await fetch("/api/sendEmail", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_email: email, name, student_id: studentId, skate_time: selectedTime, skate_size: selectedSize, song_recommendation: songRecommendation }),
+        body: JSON.stringify({ 
+          first_name: firstName, 
+          last_name: lastName, 
+          phone, 
+          email, 
+          address, 
+          height, 
+          weight, 
+          age,
+          student_id: studentId,
+          skate_preference: skatePreference,
+          shoe_size: skatePreference === "Use Provided Skates" ? shoeSize : "N/A",
+          skating_ability: skatingAbility, 
+          skate_time: selectedTime 
+        }),
       });
 
-      // Step 3: Fetch updated inventory
-      setSkateSizes(await fetchSkateSizes());
-
       alert("Reservation successful!");
-      setSelectedTime(null);
-      setSelectedSize(null);
+      // Reset form
+      setFirstName("");
+      setLastName("");
+      setPhone("");
       setEmail("");
-      setName("");
+      setAddress("");
+      setHeight("");
+      setWeight("");
+      setAge("");
       setStudentId("");
-      setSongRecommendation("");
+      setSkatePreference("");
+      setShoeSize("");
+      setSkatingAbility("");
+      setSelectedTime("");
 
       window.location.href = "/confirmation";
     } catch (error) {
@@ -82,39 +126,50 @@ function SchedulingApp() {
     }
   };
 
-  const availableTimes = Array.from(new Set(Object.values(skateSizes).flatMap((size) => Object.keys(size.times))));
-
   return (
     <div className="app-container">
       <div className="main-card">
-        <h1>Skate Size Scheduling - THIS FORM IS NOT OPEN YET. PLEASE COME BACK FEB 1ST.</h1>
-        <p className="description">Reserve your preferred skate size and time slot <strong>(L is for Women, M is for Men, Y is for Youth, Skates with letters are figure skates, Skates without letters are hockey skates)</strong>. Please ensure you fill out all required details before confirming your reservation. Please only signup for one time slot.</p>
+        <h1>Skate with a Date RSVP</h1>
+        <p className="description">This is the skate reservation for for SWAD 2026. Please enter your information below. This will be used to prefill sections of your waiver, which will be signed in person at the event.</p>
         <form onSubmit={handleFormSubmit} className="form">
-          <input type="text" placeholder="Enter your name" value={name} onChange={(e) => setName(e.target.value)} required />
-          <input type="text" placeholder="Enter your student ID (N/A if you don't have one)" value={studentId} onChange={(e) => setStudentId(e.target.value)} required />
-          <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <input type="text" placeholder="Song recommendation (optional)" value={songRecommendation} onChange={(e) => setSongRecommendation(e.target.value)} />
-
-          <div className="time-grid">
-            {availableTimes.map((time) => (
-              <div key={time} className="time-card">
-                <h2 className="time-heading">{time}</h2>
-                <div className="size-grid">
-                  {Object.keys(skateSizes).map((size) => (
-                    <button
-                      type="button" // ✅ Prevents accidental form submission
-                      key={size}
-                      disabled={!skateSizes[size].times[time]}
-                      className={`btn ${selectedTime === time && selectedSize === size ? "btn-selected" : ""}`}
-                      onClick={() => { setSelectedTime(time); setSelectedSize(size); }}
-                    >
-                      {size} ({skateSizes[size].times[time] || 0} left)
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+          <input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+          <input type="text" placeholder="Student ID" value={studentId} onChange={(e) => setStudentId(e.target.value)} required />
+          <input type="tel" placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+          <input type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input type="text" placeholder="Home Address" value={address} onChange={(e) => setAddress(e.target.value)} required />
+          
+          <div className="row-inputs">
+             <input type="text" placeholder="Height" value={height} onChange={(e) => setHeight(e.target.value)} required />
+             <input type="text" placeholder="Weight" value={weight} onChange={(e) => setWeight(e.target.value)} required />
+             <input type="number" placeholder="Age" value={age} onChange={(e) => setAge(e.target.value)} required />
           </div>
+
+          <select value={skatingAbility} onChange={(e) => setSkatingAbility(e.target.value)} required>
+            <option value="" disabled>Select Skating Ability</option>
+            {abilityLevels.map(level => (
+              <option key={level} value={level}>{level}</option>
+            ))}
+          </select>
+
+          <select value={skatePreference} onChange={(e) => setSkatePreference(e.target.value)} required>
+            <option value="" disabled>Do you have your own skates?</option>
+            {skatePreferences.map(pref => (
+              <option key={pref} value={pref}>{pref}</option>
+            ))}
+          </select>
+
+          {skatePreference === "Use Provided Skates" && (
+             <input type="text" placeholder="Shoe Size" value={shoeSize} onChange={(e) => setShoeSize(e.target.value)} required />
+          )}
+          
+          <select value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)} required>
+            <option value="" disabled>Select Time Slot</option>
+             {timeSlots.map(time => (
+              <option key={time} value={time}>{time}</option>
+            ))}
+          </select>
+
           <button type="submit" disabled={isSubmitting}>Confirm Reservation</button>
         </form>
       </div>
