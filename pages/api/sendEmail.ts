@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import nodemailer from 'nodemailer';
+import path from 'path';
+import fs from 'fs';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
@@ -27,10 +29,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: process.env.EMAIL_USER, 
-          pass: process.env.EMAIL_PASS,
+          type: 'OAuth2',
+          user: process.env.EMAIL_USER,
+          clientId: process.env.EMAIL_CLIENTID,
+          clientSecret: process.env.EMAIL_SECRET,
+          refreshToken: process.env.EMAIL_REFRESH_TOKEN,
         },
       });
+
+      // Look for the generated waiver
+      const safeName = last_name.replace(/[^a-z0-9]/gi, '_');
+      const fileName = `${safeName}_${student_id}_Waiver.pdf`;
+      const waiverPath = path.join(process.cwd(), 'waivers', fileName);
+      
+      const attachments = [];
+      if (fs.existsSync(waiverPath)) {
+        attachments.push({
+          filename: 'Skating_Waiver.pdf',
+          path: waiverPath,
+        });
+      } else {
+        console.warn(`Waiver not found at ${waiverPath}`);
+      }
 
       const mailOptions = {
         from: process.env.EMAIL_USER,
@@ -51,10 +71,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           <p><strong>Time Slot:</strong> ${skate_time}</p>
           <p>The event will be held at <strong>Ridder Arena</strong>. Please arrive on time.</p>
           <p>If you need to cancel or reschedule, please contact support.</p>
+          <p><strong>Please find your filled waiver attached.</strong></p>
           <h3>See you there! 🎉</h3>
           <p><em>This is an automated email.</em></p>
         `,
+        attachments: attachments
       };
+
 
       await transporter.sendMail(mailOptions);
       return res.status(200).json({ message: 'Confirmation email sent successfully' });

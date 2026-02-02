@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Pool } from "pg";
+import { generateAndStoreWaiver } from "@/lib/waiverService";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -36,6 +37,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       "INSERT INTO reservations (first_name, last_name, phone, email, address, height, weight, age, student_id, skate_preference, shoe_size, skating_ability, skate_time) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
       [first_name, last_name, phone, email, address, height, weight, age, student_id, skate_preference, shoe_size, skating_ability, skate_time]
     );
+
+    // Generate Waiver
+    try {
+        await generateAndStoreWaiver({
+            first_name,
+            last_name,
+            phone,
+            email,
+            address,
+            height,
+            weight,
+            age,
+            student_id,
+            shoe_size,
+            skating_ability
+        });
+    } catch (waiverError) {
+        console.error("Waiver generation failed, but reservation was saved:", waiverError);
+        // We do not fail the request here, just log it.
+    }
+
     res.status(200).json({ message: "Reservation successful" });
   } catch (error) {
     console.error("Error making reservation:", error);
