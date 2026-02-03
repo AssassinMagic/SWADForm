@@ -77,27 +77,8 @@ function SchedulingApp() {
       const reservationResult = await reservationResponse.json();
       if (!reservationResponse.ok) throw new Error(reservationResult.error);
 
-      // Step 2: Send email
-      await fetch("/api/sendEmail", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          first_name: firstName, 
-          last_name: lastName, 
-          phone, 
-          email, 
-          address, 
-          height, 
-          weight, 
-          age,
-          student_id: studentId,
-          skate_preference: skatePreference,
-          shoe_size: skatePreference === "Use Provided Skates" ? shoeSize : "N/A",
-          skating_ability: skatingAbility, 
-          skate_time: selectedTime 
-        }),
-      });
-
+      // Email is now handled by the server in makeReservation
+      
       alert("Reservation successful!");
       // Reset form
       setFirstName("");
@@ -130,7 +111,7 @@ function SchedulingApp() {
     <div className="app-container">
       <div className="main-card">
         <h1>Skate with a Date RSVP</h1>
-        <p className="description">This is the skate reservation for for SWAD 2026. Please enter your information below. This will be used to prefill sections of your waiver, which will be signed in person at the event.</p>
+        <p className="description">This is the skate reservation for for SWAD 2026 on February 14th. Please enter your information below. This will be used to prefill sections of your waiver, which will be signed in person at the event. If this form is not working please email jay00015@umn.edu</p>
         <form onSubmit={handleFormSubmit} className="form">
           <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
           <input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
@@ -170,7 +151,9 @@ function SchedulingApp() {
             ))}
           </select>
 
-          <button type="submit" disabled={isSubmitting}>Confirm Reservation</button>
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Confirm Reservation"}
+          </button>
         </form>
       </div>
     </div>

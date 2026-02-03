@@ -37,7 +37,10 @@ const main = async () => {
 
   const authorizeUrl = client.generateAuthUrl({
     access_type: 'offline',
-    scope: 'https://mail.google.com/',
+    scope: [
+      'https://mail.google.com/',
+      'https://www.googleapis.com/auth/drive.file'
+    ],
   });
 
   const server = http
