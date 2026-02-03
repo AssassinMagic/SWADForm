@@ -199,20 +199,24 @@ body {
     border: 1px solid #0056b3;
   }
   button[type="submit"] {
-    font-size: 18px; /* Increase text size */
-    padding: 12px 24px; /* Adjust padding for larger button */
+    font-size: 20px; /* Increase text size slightly more */
+    padding: 16px 32px; /* Adjust padding for larger button */
     width: 100%; /* Make button span the full width */
     background-color: #4CAF50; /* Change background color */
     color: white; /* Set text color */
     border: none;
-    border-radius: 5px; /* Add rounded corners */
+    border-radius: 8px; /* Slightly more rounded corners */
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    margin-top: 1rem;
   }
   
   /* Add hover effect for better user interaction */
   button[type="submit"]:hover {
     background-color: #45a049; /* Darken background color on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
   }
 
   input[type="text"],
@@ -244,4 +248,50 @@ input[type="number"]:focus {
 }
 .row-inputs input {
     flex: 1;
+}
+
+/* Custom Select Styling */
+.custom-select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.custom-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.2rem;
+  padding: 16px 20px;
+  padding-right: 3.5rem;
+  font-size: 1.125rem; /* Bigger font */
+  font-family: inherit;
+  color: #333;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.custom-select:hover {
+  border-color: #4CAF50;
+  background-color: #f9fafb;
+}
+
+.custom-select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.15);
+}
+
+.custom-select:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
