@@ -32,7 +32,7 @@ function SchedulingApp() {
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const timeSlots = ["5-6pm", "6-7pm", "7-8pm"];
+  const timeSlots = ["5-5:45pm", "6-6:45pm", "7-7:45pm"];
   const abilityLevels = ["Beginner", "Beginner/Intermediate", "Intermediate", "Intermediate/Expert", "Expert"];
   const skatePreferences = ["Bring Own Skates", "Use Provided Skates"];
 
@@ -111,47 +111,91 @@ function SchedulingApp() {
     <div className="app-container">
       <div className="main-card">
         <h1>Skate with a Date RSVP</h1>
-        <p className="description">This is the skate reservation for for SWAD 2026 on February 14th. Please enter your information below. This will be used to prefill sections of your waiver, which will be signed in person at the event. If this form is not working please email jay00015@umn.edu</p>
+        <p className="description">This is the skate reservation for for SWAD 2026 on February 14th. Please enter your information below. This will be used to prefill sections of your waiver, which will be signed in person at the event. If this form is not working, please contact jay00015@umn.edu.</p>
         <form onSubmit={handleFormSubmit} className="form">
-          <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-          <input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-          <input type="text" placeholder="Student ID" value={studentId} onChange={(e) => setStudentId(e.target.value)} required />
-          <input type="tel" placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} required />
-          <input type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <input type="text" placeholder="Home Address" value={address} onChange={(e) => setAddress(e.target.value)} required />
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-gray-700">First Name</label>
+            <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+          </div>
           
-          <div className="row-inputs">
-             <input type="text" placeholder="Height" value={height} onChange={(e) => setHeight(e.target.value)} required />
-             <input type="text" placeholder="Weight" value={weight} onChange={(e) => setWeight(e.target.value)} required />
-             <input type="number" placeholder="Age" value={age} onChange={(e) => setAge(e.target.value)} required />
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-gray-700">Last Name</label>
+            <input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
           </div>
 
-          <select value={skatingAbility} onChange={(e) => setSkatingAbility(e.target.value)} required>
-            <option value="" disabled>Select Skating Ability</option>
-            {abilityLevels.map(level => (
-              <option key={level} value={level}>{level}</option>
-            ))}
-          </select>
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-gray-700">Student ID</label>
+            <input type="text" placeholder="Student ID" value={studentId} onChange={(e) => setStudentId(e.target.value)} required />
+          </div>
 
-          <select value={skatePreference} onChange={(e) => setSkatePreference(e.target.value)} required>
-            <option value="" disabled>Do you have your own skates?</option>
-            {skatePreferences.map(pref => (
-              <option key={pref} value={pref}>{pref}</option>
-            ))}
-          </select>
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-gray-700">Phone Number</label>
+            <input type="tel" placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-gray-700">Email Address</label>
+            <input type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-gray-700">Home Address</label>
+            <input type="text" placeholder="Home Address" value={address} onChange={(e) => setAddress(e.target.value)} required />
+          </div>
+          
+          <div className="row-inputs">
+             <div className="flex flex-col gap-1 flex-1">
+               <label className="font-semibold text-gray-700">Height</label>
+               <input type="text" placeholder="Height" value={height} onChange={(e) => setHeight(e.target.value)} required />
+             </div>
+             <div className="flex flex-col gap-1 flex-1">
+               <label className="font-semibold text-gray-700">Weight</label>
+               <input type="text" placeholder="Weight" value={weight} onChange={(e) => setWeight(e.target.value)} required />
+             </div>
+             <div className="flex flex-col gap-1 flex-1">
+               <label className="font-semibold text-gray-700">Age</label>
+               <input type="number" placeholder="Age" value={age} onChange={(e) => setAge(e.target.value)} required />
+             </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-gray-700">Skating Ability</label>
+            <select value={skatingAbility} onChange={(e) => setSkatingAbility(e.target.value)} required className="custom-select">
+              <option value="" disabled>Select Skating Ability</option>
+              {abilityLevels.map(level => (
+                <option key={level} value={level}>{level}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-gray-700">Do you have your own skates?</label>
+            <select value={skatePreference} onChange={(e) => setSkatePreference(e.target.value)} required className="custom-select">
+              <option value="" disabled>Select Option</option>
+              {skatePreferences.map(pref => (
+                <option key={pref} value={pref}>{pref}</option>
+              ))}
+            </select>
+          </div>
 
           {skatePreference === "Use Provided Skates" && (
-             <input type="text" placeholder="Shoe Size" value={shoeSize} onChange={(e) => setShoeSize(e.target.value)} required />
+             <div className="flex flex-col gap-2">
+               <label className="font-semibold text-gray-700">Shoe Size</label>
+               <input type="text" placeholder="Shoe Size" value={shoeSize} onChange={(e) => setShoeSize(e.target.value)} required />
+             </div>
           )}
           
-          <select value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)} required>
-            <option value="" disabled>Select Time Slot</option>
-             {timeSlots.map(time => (
-              <option key={time} value={time}>{time}</option>
-            ))}
-          </select>
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-gray-700">Select Time Slot</label>
+            <select value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)} required className="custom-select">
+              <option value="" disabled>Select Time Slot</option>
+               {timeSlots.map(time => (
+                <option key={time} value={time}>{time}</option>
+              ))}
+            </select>
+          </div>
 
-          <button type="submit" disabled={isSubmitting}>
+          <button type="submit" disabled={isSubmitting} className="mt-4 text-xl py-4 font-bold shadow-md hover:shadow-lg transition-all">
             {isSubmitting ? "Submitting..." : "Confirm Reservation"}
           </button>
         </form>
