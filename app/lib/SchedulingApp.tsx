@@ -30,7 +30,15 @@ function SchedulingApp() {
   const [shoeSize, setShoeSize] = useState<string>("");
   const [skatingAbility, setSkatingAbility] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
+  const [slotCounts, setSlotCounts] = useState<Record<string, { total: number; provided: number }>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetch("/api/getSlotCounts")
+      .then((res) => res.json())
+      .then((data) => setSlotCounts(data))
+      .catch((err) => console.error("Failed to load slot counts", err));
+  }, []);
 
   const timeSlots = ["5-5:45pm", "6-6:45pm", "7-7:45pm"];
   const abilityLevels = ["Beginner", "Beginner/Intermediate", "Intermediate", "Intermediate/Expert", "Expert"];
@@ -189,9 +197,24 @@ function SchedulingApp() {
             <label className="font-semibold text-gray-700">Select Time Slot</label>
             <select value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)} required className="custom-select">
               <option value="" disabled>Select Time Slot</option>
-               {timeSlots.map(time => (
-                <option key={time} value={time}>{time}</option>
-              ))}
+               {timeSlots.map(time => {
+                 const count = slotCounts[time] || { total: 0, provided: 0 };
+                 const isProvidedFull = count.provided >= 70;
+                 const isDisabled = skatePreference === "Use Provided Skates" && isProvidedFull;
+                 
+                 let label = time;
+                 if (skatePreference === "Use Provided Skates") {
+                    label = `${time} (${count.provided}/70 provided reserved)`;
+                 } else {
+                    label = `${time} (${count.total} signed up)`;
+                 }
+
+                 return (
+                  <option key={time} value={time} disabled={isDisabled}>
+                    {label} {isDisabled ? "(Full)" : ""}
+                  </option>
+                 );
+               })}
             </select>
           </div>
 
