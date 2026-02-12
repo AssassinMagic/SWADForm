@@ -61,6 +61,18 @@ function SchedulingApp() {
     setIsSubmitting(true);
 
     try {
+      // Check if the slot is still available
+      const slotRes = await fetch("/api/getSlotCounts");
+      const latestCounts = await slotRes.json();
+      const currentCount = latestCounts[selectedTime] || { provided: 0 };
+      
+      if (skatePreference === "Use Provided Skates" && currentCount.provided >= 80) {
+          alert("Sorry, this time slot has just filled up. Please select another time.");
+          setSlotCounts(latestCounts);
+          setIsSubmitting(false);
+          return;
+      }
+      
       // Step 1: Make the reservation
       const reservationResponse = await fetch("/api/makeReservation", {
         method: "POST",
@@ -199,12 +211,12 @@ function SchedulingApp() {
               <option value="" disabled>Select Time Slot</option>
                {timeSlots.map(time => {
                  const count = slotCounts[time] || { total: 0, provided: 0 };
-                 const isProvidedFull = count.provided >= 70;
+                 const isProvidedFull = count.provided >= 80;
                  const isDisabled = skatePreference === "Use Provided Skates" && isProvidedFull;
                  
                  let label = time;
                  if (skatePreference === "Use Provided Skates") {
-                    label = `${time} (${count.provided}/70 provided reserved)`;
+                    label = `${time} (${count.provided}/80 provided reserved)`;
                  } else {
                     label = `${time} (${count.total} signed up)`;
                  }
